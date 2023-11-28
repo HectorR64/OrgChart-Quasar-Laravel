@@ -1,0 +1,78 @@
+[
+  {
+      "label": "Juan",
+      "expand": true,
+      "some_id": 1,
+      "department": "Gerencia",
+      "children": [
+          {
+              "label": "Maxie Schmeler DDS",
+              "expand": true,
+              "some_id": 2,
+              "department": "Administracion",
+              "children": [
+                  {
+                      "label": "Araceli Skiles PhD",
+                      "expand": false,
+                      "some_id": 3,
+                      "department": "Administracion",
+                      "children": [
+                          {
+                              "label": "Lottie Bergstrom",
+                              "expand": true,
+                              "some_id": 6,
+                              "department": "Contabilidad",
+                              "children": [
+                                  {
+                                      "label": "Prof. Donald Hills",
+                                      "expand": true,
+                                      "some_id": 9,
+                                      "department": "Recurso Humanos",
+                                      "children": []
+                                  }
+                              ]
+                          },
+                          {
+                              "label": "Dr. Travis Jakubowski",
+                              "expand": false,
+                              "some_id": 7,
+                              "department": "Sistemas",
+                              "children": [
+                                  {
+                                      "label": "Brooklyn Bartell",
+                                      "expand": false,
+                                      "some_id": 8,
+                                      "department": "Sistemas",
+                                      "children": []
+                                  },
+                                  {
+                                      "label": "Christop Becker",
+                                      "expand": false,
+                                      "some_id": 10,
+                                      "department": "Sistemas",
+                                      "children": []
+                                  }
+                              ]
+                          }
+                      ]
+                  },
+                  {
+                      "label": "Hillard Cormier",
+                      "expand": false,
+                      "some_id": 4,
+                      "department": "Gerencia",
+                      "children": [
+                          {
+                              "label": "Prof. Okey Schmeler III",
+                              "expand": true,
+                              "some_id": 5,
+                              "department": "Sistemas",
+                              "children": []
+                          }
+                      ]
+                  }
+              ]
+          }
+      ]
+  }
+]

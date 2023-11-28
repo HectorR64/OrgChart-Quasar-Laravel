@@ -1,11 +1,8 @@
 <template>
   <div class="full-height row flex-center" style="margin-top: 20px;">
     <div class="column items-center">
-      <img
-        alt="Quasar logo"
-        src="~assets/quasar-logo-vertical.svg"
-        style="width: 200px; height: 200px; margin-bottom: 20px"
-      >
+      <img alt="Quasar logo" src="~assets/quasar-logo-vertical.svg"
+        style="width: 200px; height: 200px; margin-bottom: 20px">
       <q-card class="my-card">
         <q-card-section>
           <div class="text-h6 text-center">Iniciar Sesión</div>
@@ -17,12 +14,14 @@
               <q-icon name="mail_outline" />
             </template>
           </q-input>
-          <q-input filled v-model="password" :type="showPassword ? 'text' : 'password'" label="Contraseña" class="q-mb-md">
+          <q-input filled v-model="password" :type="showPassword ? 'text' : 'password'" label="Contraseña"
+            class="q-mb-md">
             <template v-slot:prepend>
               <q-icon name="lock_outline" />
             </template>
             <template v-slot:append>
-              <q-icon :name="showPassword ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="showPassword = !showPassword" />
+              <q-icon :name="showPassword ? 'visibility_off' : 'visibility'" class="cursor-pointer"
+                @click="showPassword = !showPassword" />
             </template>
           </q-input>
         </q-card-section>
@@ -54,7 +53,7 @@
 import { ref } from 'vue';
 import { useQuasar } from 'quasar';
 import { useRouter } from 'vue-router';
-import axios from 'axios';
+import { api } from 'boot/axios'
 
 const email = ref('');
 const password = ref('');
@@ -65,7 +64,7 @@ const router = useRouter();
 
 const login = async () => {
   try {
-    const response = await axios.post('http://127.0.0.1:8000/api/login', {
+    const response = await api.post('/login', {
       email: email.value,
       password: password.value
     });

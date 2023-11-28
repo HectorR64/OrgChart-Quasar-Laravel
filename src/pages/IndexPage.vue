@@ -49,7 +49,7 @@
 
 <script>
 import { defineComponent, ref, onMounted, reactive } from 'vue';
-import axios from 'axios';
+import { api } from 'boot/axios'
 import 'vue3-blocks-tree/dist/vue3-blocks-tree.css';
 
 export default defineComponent({
@@ -62,7 +62,7 @@ export default defineComponent({
     const loadDepartments = async () => {
       const token = localStorage.getItem('access_token');
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/departments', {
+        const response = await api.get('/departments', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         departments.value = response.data;
@@ -74,7 +74,7 @@ export default defineComponent({
     const loadTreeData = async () => {
       const token = localStorage.getItem('access_token');
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/organization/index', {
+        const response = await api.get('/organization/index', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         Object.assign(treeData, response.data[0]);
@@ -121,7 +121,7 @@ export default defineComponent({
         };
 
         try {
-          const response = await axios.put(`http://127.0.0.1:8000/api/organization/update/${newNodeId.value}`, updatedNodeData, {
+          const response = await api.put(`/organization/update/${newNodeId.value}`, updatedNodeData, {
             headers: { 'Authorization': `Bearer ${token}` }
           });
 
@@ -169,7 +169,7 @@ export default defineComponent({
           department_name: newNodeDepartment.value
         };
         try {
-          const response = await axios.post('http://127.0.0.1:8000/api/organization/post', newNodeData, {
+          const response = await api.post('/organization/post', newNodeData, {
             headers: { 'Authorization': `Bearer ${token}` }
           });
 
@@ -219,7 +219,7 @@ export default defineComponent({
       if (newNodeId.value !== null) {
         try {
           const token = localStorage.getItem('access_token');
-          const response = await axios.delete(`http://127.0.0.1:8000/api/organization/delete/${newNodeId.value}`, {
+          const response = await api.delete(`/organization/delete/${newNodeId.value}`, {
             headers: { 'Authorization': `Bearer ${token}` }
           });
 

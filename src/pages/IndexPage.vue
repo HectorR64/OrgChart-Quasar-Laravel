@@ -1,49 +1,62 @@
 <template>
-  <q-page class="flex flex-center">
-    <div class="flex flex-center">
-      <div>
-        <!-- Árbol de nodos -->
-        <blocks-tree :data="treeData" :collapsable="true"
-          :props="{ label: 'label', expand: 'expand', children: 'children', key: 'some_id' }">
-          <template #node="{ data }">
-            <span @click="selectNode(data)">
-              <input type="checkbox" :checked="selected.indexOf(data.some_id) > -1"
-                @change="(e) => toggleSelect(data, e.target.checked)" /> {{ data.label }}
-            </span>
-            <br />
-          </template>
-        </blocks-tree>
+  <q-page class="q-pa-md example-row-stacked-to-horizontal">
+    <q-card class="col-12 col-md-8" flat bordered>
+      <q-card-section class="row">
+        <!-- Permiso consultar del bakend -->
+        <div v-if="permissions.includes('consultar')" class="col-md-6 offset-md-3">
+          <!-- Árbol de nodos -->
+          <blocks-tree :data="treeData" :collapsable="true"
+            :props="{ label: 'label', expand: 'expand', children: 'children', key: 'some_id' }">
+            <template #node="{ data }">
+              <span @click="selectNode(data)">
+                <input type="checkbox" :checked="selected.indexOf(data.some_id) > -1"
+                  @change="(e) => toggleSelect(data, e.target.checked)" /> {{ data.label }}
+              </span>
+              <br />
+              <span v-if="data.children && data.children.length">
 
-        <!-- Input y botón para añadir ramas -->
-        <!-- Ventana modal -->
-        <q-dialog v-model="showModal">
-          <q-card class="my-card">
-            <q-card-section>
-              <div class="text-h6">Modificar nodo</div>
-            </q-card-section>
+              </span>
+            </template>
+          </blocks-tree>
 
-            <q-card-section>
-              <div>ID del nodo: {{ newNodeId }}</div>
-              <div>
-                <q-input class="q-mb-md" filled v-model="currentNodeLabel" placeholder="Nombre actual del nodo" />
-                <q-select v-model="currentNodeDepartment" :options="departments" label="Departamento" outlined />
-                <q-btn v-if="permissions.includes('actualizar')" flat label="Actualizar integrante" color="primary"
-                  @click="updateNodeData" />
-              </div>
-              <div>
-                <q-input class="q-mb-md" filled v-model="newNodeLabel" placeholder="Nueva etiqueta del nodo" />
-                <q-select v-model="newNodeDepartment" :options="departments" label="Departamento" outlined />
-                <q-btn v-if="permissions.includes('crear')" flat label="Añadir" color="primary" @click="addLeafToNode" />
-              </div>
-            </q-card-section>
-            <q-card-actions align="right">
-              <q-btn v-if="permissions.includes('eliminar')" flat label="Eliminar" color="primary" @click="deleteNode" />
-              <q-btn flat label="Cancelar" color="primary" v-close-popup />
-            </q-card-actions>
-          </q-card>
-        </q-dialog>
-      </div>
-    </div>
+          <!-- Input y botón para añadir ramas -->
+          <!-- Ventana modal -->
+          <q-dialog v-model="showModal">
+            <q-card class="my-card">
+              <q-card-section>
+                <div class="text-h6">Modificar Integrante</div>
+              </q-card-section>
+
+              <q-card-section>
+                <div>ID: {{ newNodeId }}</div>
+                <div>
+                  <q-input class="q-mb-md" filled v-model="currentNodeLabel" placeholder="Nombre actual del nodo" />
+                  <q-select class="q-mb-md" v-model="currentNodeDepartment" :options="departments" label="Departamento"
+                    outlined />
+                  <!-- Permiso actualizar del bakend -->
+                  <q-btn v-if="permissions.includes('actualizar')" flat label="Actualizar integrante" color="primary"
+                    @click="updateNodeData" />
+                </div>
+                <div>
+                  <q-input class="q-mb-md" filled v-model="newNodeLabel" placeholder="Nombre del integrante" />
+                  <q-select class="q-mb-md" v-model="newNodeDepartment" :options="departments" label="Departamento"
+                    outlined />
+                  <!-- Permiso crear del bakend -->
+                  <q-btn v-if="permissions.includes('crear')" flat label="Añadir" color="primary"
+                    @click="addLeafToNode" />
+                </div>
+              </q-card-section>
+              <q-card-actions align="right">
+                <!-- Permiso eliminar del bakend -->
+                <q-btn v-if="permissions.includes('eliminar')" flat label="Eliminar" color="primary"
+                  @click="deleteNode" />
+                <q-btn flat label="Cancelar" color="primary" v-close-popup />
+              </q-card-actions>
+            </q-card>
+          </q-dialog>
+        </div>
+      </q-card-section>
+    </q-card>
     <FloatingButton @click="accionBoton">
       <q-icon name="grid_on" />
       <q-tooltip>
@@ -52,6 +65,7 @@
     </FloatingButton>
   </q-page>
 </template>
+
 
 <script setup>
 import { ref, onMounted, reactive } from 'vue';

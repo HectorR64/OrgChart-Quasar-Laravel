@@ -27,23 +27,29 @@
               <div>
                 <q-input class="q-mb-md" filled v-model="currentNodeLabel" placeholder="Nombre actual del nodo" />
                 <q-select v-model="currentNodeDepartment" :options="departments" label="Departamento" outlined />
-                <q-btn flat label="Actualizar Nodo" color="primary" @click="updateNodeData" />
+                <q-btn v-if="permissions.includes('actualizar')" flat label="Actualizar integrante" color="primary"
+                  @click="updateNodeData" />
               </div>
               <div>
                 <q-input class="q-mb-md" filled v-model="newNodeLabel" placeholder="Nueva etiqueta del nodo" />
                 <q-select v-model="newNodeDepartment" :options="departments" label="Departamento" outlined />
-                <q-btn flat label="Añadir" color="primary" @click="addLeafToNode" />
+                <q-btn v-if="permissions.includes('crear')" flat label="Añadir" color="primary" @click="addLeafToNode" />
               </div>
             </q-card-section>
             <q-card-actions align="right">
-              <q-btn flat label="Eliminar" color="primary" @click="deleteNode" />
+              <q-btn v-if="permissions.includes('eliminar')" flat label="Eliminar" color="primary" @click="deleteNode" />
               <q-btn flat label="Cancelar" color="primary" v-close-popup />
             </q-card-actions>
           </q-card>
         </q-dialog>
-        <q-btn label="Exportar JSON" @click="exportToJson" />
       </div>
     </div>
+    <FloatingButton @click="accionBoton">
+      <q-icon name="grid_on" />
+      <q-tooltip>
+        Excel
+      </q-tooltip>
+    </FloatingButton>
   </q-page>
 </template>
 
@@ -51,10 +57,13 @@
 import { ref, onMounted, reactive } from 'vue';
 import { api } from 'boot/axios'
 import 'vue3-blocks-tree/dist/vue3-blocks-tree.css';
+import FloatingButton from 'src/components/FloatingButton.vue';
+
 let selected = ref([]);
 let treeData = reactive({});
 let departments = ref([]);
 const token = localStorage.getItem('access_token');
+const permissions = ref(JSON.parse(localStorage.getItem('permissions') || '[]'));
 const loadDepartments = async () => {
 
   try {
@@ -236,22 +245,31 @@ const deleteNodeFromTree = (node, parent, idToDelete) => {
     node.children.forEach(child => deleteNodeFromTree(child, node, idToDelete));
   }
 };
-const exportToJson = () => {
-  const jsonString = JSON.stringify(treeData, null, 2); // Convierte el árbol a JSON
-  const blob = new Blob([jsonString], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = 'treeData.json'; // Nombre del archivo a descargar
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
+//Descarga el archivo de excel
+const accionBoton = async () => {
+  try {
+    const response = await api.get('/organization/excel', {
+      headers: { 'Authorization': `Bearer ${token}` },
+      responseType: 'blob' // Importante para archivos binarios como Excel
+    });
+    // Crear un URL para el archivo
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'organization.xlsx');
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('Error al descargar el archivo:', error);
+  }
 };
 
 </script>
-<style>
-.my-card {
-  width: 400px;
-}
+<style lang="sass" scoped>
+.my-card
+  width: 100%
+  max-width: 500px
 </style>
+

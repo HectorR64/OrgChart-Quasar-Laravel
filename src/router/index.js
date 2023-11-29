@@ -1,6 +1,7 @@
 import { route } from 'quasar/wrappers';
 import { createRouter, createMemoryHistory, createWebHistory, createWebHashHistory } from 'vue-router';
 import routes from './routes';
+import { useAuthStore } from 'src/stores/auth';
 
 export default route(function (/* { store, ssrContext } */) {
   const createHistory = process.env.SERVER
@@ -15,15 +16,16 @@ export default route(function (/* { store, ssrContext } */) {
 
   // Guard de navegación
   Router.beforeEach((to, from, next) => {
-    const isAuthenticated = localStorage.getItem('access_token'); // Comprueba si el usuario está autenticado
-    const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+    const authStore = useAuthStore(); // Usar store Pinia
+    const isAuthenticated = !!authStore.token; // Verificar si el token está presente
 
-    if (requiresAuth && !isAuthenticated) {
-      next('/'); // Redirige a la página de login si no está autenticado
+    if (to.matched.some(record => record.meta.requiresAuth) && !isAuthenticated) {
+      next('/login'); // Redirige al login si no hay token y la ruta lo requiere
     } else {
-      next(); // Si está autenticado, o la ruta no requiere autenticación, continúa
+      next(); // Continúa si hay token o la ruta no requiere autenticación
     }
   });
+
 
   return Router;
 });

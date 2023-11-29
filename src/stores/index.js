@@ -13,5 +13,11 @@ import { createPinia } from 'pinia'
 export default store((/* { ssrContext } */) => {
   const pinia = createPinia()
 
+  pinia.use(({ store }) => {
+    // Restaurar el estado cuando se inicializa la tienda
+    if (store.$id === 'auth') {
+      store.restoreState();
+    }
+  });
   return pinia
 })

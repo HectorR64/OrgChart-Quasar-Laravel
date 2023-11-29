@@ -53,15 +53,22 @@
 import { ref } from 'vue';
 import { useQuasar } from 'quasar';
 import { useRouter } from 'vue-router';
-import { api } from 'boot/axios'
+import { api } from 'boot/axios';
+import { useAuthStore } from 'src/stores/auth';
 
+// Estado Reactivo
 const email = ref('');
 const password = ref('');
 const showPassword = ref(false);
 
+// Instancia de Quasar y enrutador
 const $q = useQuasar();
 const router = useRouter();
 
+// Store Pinia
+const authStore = useAuthStore();
+
+// Métodos
 const login = async () => {
   try {
     const response = await api.post('/login', {
@@ -74,18 +81,21 @@ const login = async () => {
     console.error("Error de autenticación", error);
     const errorMessage = error.response ? error.response.statusText : "Error desconocido";
     $q.notify({
+      color: 'red',
       message: `Error: ${errorMessage}`,
-      color: 'red'
     });
   }
 };
 
 const handleLoginSuccess = (data) => {
-  localStorage.setItem('access_token', data.access_token);
+  // Actualizar estado en Pinia
+  authStore.login({
+    token: data.access_token,
+    permissions: data.roles.flatMap(role => role.permissions.map(p => p.name))
+  });
 
-  const permissions = data.roles.flatMap(role => role.permissions.map(p => p.name));
-  localStorage.setItem('permissions', JSON.stringify(permissions));
-
+  // Redirigir al usuario
   router.push('/main');
 };
 </script>
+

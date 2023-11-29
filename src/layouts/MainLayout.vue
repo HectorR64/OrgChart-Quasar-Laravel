@@ -47,22 +47,32 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-
+import { useAuthStore } from 'src/stores/auth';
+import { api } from 'boot/axios';
 // Usar ref para crear una propiedad reactiva
 const menuOpen = ref(false);
 
 // Acceder al enrutador de Vue Router
 const router = useRouter();
+const authStore = useAuthStore();
 
 // Método para alternar el estado de menuOpen
 const toggleMenu = () => {
   menuOpen.value = !menuOpen.value;
 };
+//Método cerrar sesión
+const logout = async () => {
+  try {
+    // Enviar el token en la solicitud de logout
+    await api.post('/logout', {}, {
+      headers: { 'Authorization': `Bearer ${authStore.token}` }
+    });
 
-// Método para manejar el cierre de sesión
-const logout = () => {
-  localStorage.removeItem('access_token');
-  localStorage.removeItem('permissions');
-  router.push('/');
+    // Proceder con el logout en el cliente después de la respuesta del servidor
+    authStore.logout();
+    router.push('/'); // Redirigir al usuario a la página de inicio de sesión
+  } catch (error) {
+    console.error('Error en el logout:', error);
+  }
 };
 </script>

@@ -68,21 +68,24 @@
 
 
 <script setup>
-import { ref, onMounted, reactive } from 'vue';
-import { api } from 'boot/axios'
-import 'vue3-blocks-tree/dist/vue3-blocks-tree.css';
+import { ref, onMounted, reactive, computed } from 'vue';
+import { useAuthStore } from 'src/stores/auth';
+import { api } from 'boot/axios';
 import FloatingButton from 'src/components/FloatingButton.vue';
+import 'vue3-blocks-tree/dist/vue3-blocks-tree.css';
+
 
 let selected = ref([]);
 let treeData = reactive({});
 let departments = ref([]);
-const token = localStorage.getItem('access_token');
-const permissions = ref(JSON.parse(localStorage.getItem('permissions') || '[]'));
+const authStore = useAuthStore();
+const token = computed(() => authStore.token); //valores que dependen de otros reactivos y que necesitan ser recalculados cuando estos cambian
+const permissions = computed(() => authStore.permissions);
 const loadDepartments = async () => {
 
   try {
     const response = await api.get('/departments', {
-      headers: { 'Authorization': `Bearer ${token}` }
+      headers: { 'Authorization': `Bearer ${token.value}` }
     });
     departments.value = response.data;
   } catch (error) {
@@ -94,7 +97,7 @@ const loadTreeData = async () => {
 
   try {
     const response = await api.get('/organization/index', {
-      headers: { 'Authorization': `Bearer ${token}` }
+      headers: { 'Authorization': `Bearer ${token.value}` }
     });
     Object.assign(treeData, response.data[0]);
   } catch (error) {
@@ -132,7 +135,7 @@ const updateNodeData = async () => {
 
     try {
       const response = await api.put(`/organization/update/${newNodeId.value}`, updatedNodeData, {
-        headers: { 'Authorization': `Bearer ${token}` }
+        headers: { 'Authorization': `Bearer ${token.value}` }
       });
 
       // Actualizar el nodo en el árbol
@@ -180,7 +183,7 @@ const addLeafToNode = async () => {
     };
     try {
       const response = await api.post('/organization/post', newNodeData, {
-        headers: { 'Authorization': `Bearer ${token}` }
+        headers: { 'Authorization': `Bearer ${token.value}` }
       });
 
       // Añadir el nodo al árbol local
@@ -228,7 +231,7 @@ const deleteNode = async () => {
     try {
 
       const response = await api.delete(`/organization/delete/${newNodeId.value}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
+        headers: { 'Authorization': `Bearer ${token.value}` }
       });
 
       if (response.data.success === "Personal eliminado correctamente") {
@@ -263,7 +266,7 @@ const deleteNodeFromTree = (node, parent, idToDelete) => {
 const accionBoton = async () => {
   try {
     const response = await api.get('/organization/excel', {
-      headers: { 'Authorization': `Bearer ${token}` },
+      headers: { 'Authorization': `Bearer ${token.value}` },
       responseType: 'blob' // Importante para archivos binarios como Excel
     });
     // Crear un URL para el archivo

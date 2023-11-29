@@ -66,6 +66,7 @@
   </q-page>
 </template>
 
+
 <script setup>
 import { ref, onMounted, reactive } from 'vue';
 import { api } from 'boot/axios'

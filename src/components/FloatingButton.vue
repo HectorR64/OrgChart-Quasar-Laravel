@@ -5,7 +5,7 @@
     class="floating-button"
     @click="onClick"
   >
-    <slot></slot> <!-- Permite contenido personalizado -->
+    <slot></slot>
   </q-btn>
 </template>
 
